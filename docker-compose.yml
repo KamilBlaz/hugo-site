@@ -1,0 +1,24 @@
+
+services:
+  #  hugo:
+  #  image: klakegg/hugo:0.101.0
+  #  command: shell
+  #  volumes:
+  #    - "/data/hugo/:/src"
+  #  ports:
+  #    - "1313:1313"
+
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
