@@ -1,21 +1,27 @@
 
-FROM nginx:alpine as build
+FROM alpine:latest
 
-RUN apk add --update \
-    wget
-    
-ARG HUGO_VERSION="0.114.0"
-RUN wget --quiet "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" && \
-    tar xzf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz && \
-    rm -r hugo_${HUGO_VERSION}_Linux-64bit.tar.gz && \
-    mv hugo /usr/bin
+MAINTAINER JG <julien@mangue.eu>
 
-COPY ./ /site
-WORKDIR /site
-RUN hugo --source ./kbsite/ 
+RUN apk add --no-cache \
+    curl \
+    git \
+    openssh-client \
+    rsync
 
-EXPOSE 80 1313
+ENV VERSION 0.119.0
+RUN mkdir -p /usr/local/src \
+    && cd /usr/local/src \
 
-CMD ["hugo", "--source", "./kbsite/"]
-CMD [ "hugo", "server", "--disableFastRender", "--buildDrafts", "--watch", "--bind", "0.0.0.0", "--baseURL=http://localhost:1313"]
+    && curl -L https://github.com/gohugoio/hugo/releases/download/v${VERSION}/hugo_${VERSION}_Linux-64bit.tar.gz | tar -xz \
+    && mv hugo /usr/local/bin/hugo \
 
+    && curl -L https://bin.equinox.io/c/dhgbqpS8Bvy/minify-stable-linux-amd64.tgz | tar -xz \
+    && mv minify /usr/local/bin/ \
+
+    && addgroup -Sg 1000 hugo \
+    && adduser -SG hugo -u 1000 -h /src hugo
+
+WORKDIR /src
+
+EXPOSE 1313

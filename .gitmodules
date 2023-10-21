@@ -1,0 +1,3 @@
+[submodule "kbsite/themes/hello-friend"]
+	path = kbsite/themes/hello-friend
+	url = https://github.com/panr/hugo-theme-hello-friend.git
